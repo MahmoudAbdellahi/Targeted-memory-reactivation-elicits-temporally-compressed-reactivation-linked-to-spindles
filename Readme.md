@@ -1,6 +1,6 @@
 <div style="text-align: center; line-height: 0;">
   <!-- link: https://readme-typing-svg.demolab.com/demo/ and https://devicon.dev/ -->
-  <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size22&pause=1000&center=true&multiline=true&width=1500&height=100&lines=Code+for+the+study%3A+'Targeted+memory+reactivation+elicits+temporally+compressed+reactivation+linked+to+spindles'" alt="Typing SVG" /></a>
+  <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size24&pause=1000&center=true&multiline=true&width=1500&height=100&lines=Targeted+memory+reactivation+elicits+temporally+compressed+reactivation+linked+to+spindles" alt="Typing SVG" /></a>
 <div align="center">  
   <img src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmhvNTZzZmdmZDltY3BldXMzd29meW1xdmZjeWs4bHVnaWd1MW8xNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/JpDQe7F3W6SmHlSozb/giphy.gif" width="600" alt="Example GIF" style="margin-top: -50px; margin-bottom: 50px;">
 </div>
