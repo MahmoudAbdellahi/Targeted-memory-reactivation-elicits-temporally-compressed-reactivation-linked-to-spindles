@@ -2,7 +2,7 @@
   <!-- link: https://readme-typing-svg.demolab.com/demo/ and https://devicon.dev/ -->
   <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size30&pause=1000&center=true&multiline=true&width=1500&height=100&lines=Targeted+memory+reactivation+elicits+temporally+compressed+reactivation+linked+to+spindles" alt="Typing SVG" /></a>
 <div align="center">  
-  <img src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExdDg3b3psajducG85OWx3ZWoyNDgwNTdzMHV3Zjh2OGhqcGc1am5haCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/M3qFDl8PLYHZMFmmdZ/giphy.gif" width="600" alt="Example GIF" style="margin-top: -50px; margin-bottom: 50px;">
+  <img src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExZXI2ZGJ5NzgxemwzY2YxMHQzZGg4NXhmYTB3bGpyZzAzc3AxcTF0ZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3YRciOxQ1lBXXssI8V/giphy.gif" width="600" alt="Example GIF" style="margin-top: -50px; margin-bottom: 50px;">
 </div>
 </div>
 
