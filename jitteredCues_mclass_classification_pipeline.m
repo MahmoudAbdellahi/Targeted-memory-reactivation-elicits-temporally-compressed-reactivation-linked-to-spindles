@@ -16,7 +16,7 @@
 % (please change pathAppend accordingly)
 pathAppend = 'E:/D/work/jittered exp/Data and code for_Targeted memory reactivation elicits temporally compressed reactivation linked to spindles';
 cd([pathAppend '/code']);
-analysis = 'temporal_compression'; % please change according to the analysis you would like to run: erp_tf, classification, high_spindle_pw, low_spindle_pw, temporal_compression
+analysis = 'temporal_compression'; % please change according to the analysis you would like to run: erp_tf, classification, high_spindle_pw, low_spindle_pw, temporal_compression, behavioural_analyses
 
 %% configuring plots, and participants ids, importing fieldtrip default functions
 addpath([pathAppend '\fieldtrip-20190419'])
@@ -31,7 +31,7 @@ sbj = [3,4,5,6,7,8,9,10,11,12,14,15,16,17,18,20,21,22,23,24,26,2,3,5,6,7,8,9,11,
 % output and then each of following blocks represent a visualisation and
 % statistical analysis for a specific analysis
 
-% general parameters settings to load the correct files
+% general parameters settings to load the correct files6
 trn_ds = 'img';
 tst_ds = 'sleep';
 if strcmp(trn_ds,'img')==1, sleep_stage_trn=0; else trn_ds='sleep'; sleep_stage_trn=3; end
@@ -63,6 +63,9 @@ axtimeAcc=[];
 for run=1:size(sequence,1)
     for cond=1:conditions 
         for nn=1:numel(sbj)
+            if strcmp(analysis,'behavioural_analyses')
+                break;
+            end
             if nn>=22 
                 cleaned_path = [pathAppend '/data/MRI_part']; 
             end
@@ -181,7 +184,7 @@ for run=1:size(sequence,1)
  
             result_trn.trial = single(result_trn.trial); result_tst.trial = single(result_tst.trial);
             
-            % claculate pca using sleep data
+            % calculate pca using sleep data
             cfg=[];
             cfg.data = result_tst;
             cfg.method = 'pca';
@@ -251,6 +254,8 @@ for run=1:size(sequence,1)
         % figure 2 c
         load fidelity_pt fidelity_pt
         res = lv_pretty_errorbar(result_trn.time, fidelity_pt, (fidelity_pt*0)+0.25, 1);
+        fig = gcf;
+        set(fig, 'NumberTitle', 'off', 'Name', 'Figure 2c');
     end
 end
 %% ERP and TF analysis, figure 2b
@@ -281,146 +286,167 @@ if strcmp(analysis,'erp_tf')
     plot(tst.data.time(id1), mean(erp(:,id1),1), ...
         'black-')  
     set(gca,'YColor','k');
+    fig = gcf;
+    set(fig, 'NumberTitle', 'off', 'Name', 'Figure 2b');
 end
 
 %% high and low sigma classification .. requires running both high_spindle_pw and fidelity_pt_sp_low conditions 
 % as this will compare the results 
-load fidelity_pt_sp_low fidelity_pt_sp_low;
-load fidelity_pt_sp fidelity_pt_sp; 
-% figure 4b
-res = lv_pretty_errorbar(result_trn.time, fidelity_pt_sp, (fidelity_pt_sp*0)+0.25, 1);
-% supp. figure 2
-res = lv_pretty_errorbar(result_trn.time, fidelity_pt_sp, fidelity_pt_sp_low, 1);
-
+if strcmp(analysis,'low_spindle_pw') || strcmp(analysis,'high_spindle_pw')
+    load fidelity_pt_sp_low fidelity_pt_sp_low;
+    load fidelity_pt_sp fidelity_pt_sp; 
+    % figure 4b
+    res = lv_pretty_errorbar(result_trn.time, fidelity_pt_sp, (fidelity_pt_sp*0)+0.25, 1);
+    fig = gcf;
+    set(fig, 'NumberTitle', 'off', 'Name', 'Figure 4b');
+    % supp. figure 2
+    figure, 
+    res = lv_pretty_errorbar(result_trn.time, fidelity_pt_sp, fidelity_pt_sp_low, 1);
+    fig = gcf;
+    set(fig, 'NumberTitle', 'off', 'Name', 'Supp. figure 2');
+end
 %% behavioural analyses
 %%  cued vs. un-cued which is the aggregation from different sessions
-pwd
-[re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,3); % takes name of the dataset and sessions to analyse and returns the blocks aggregated
-[re2,nre2,re_random2,nre_random2] = extract_blocks('mri_myDat_s',sbj,3);  % MRI
-re=[re;re2]; nre=[nre;nre2]; re_random=[re_random;re_random2]; nre_random=[nre_random;nre_random2];
-s3r = isnan(nanmean(re,2)) | isnan(nanmean(nre,2)) | isnan(nanmean(re_random,2)) | isnan(nanmean(nre_random,2));
-
-[re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,4); % takes name of the dataset and sessions to analyse and returns the blocks aggregated
-[re2,nre2,re_random2,nre_random2] = extract_blocks('mri_myDat_s',sbj,4);  % MRI
-re=[re;re2]; nre=[nre;nre2]; re_random=[re_random;re_random2]; nre_random=[nre_random;nre_random2];
-rppnt = find(isnan(nanmean(re,2)) | isnan(nanmean(nre,2)) | isnan(nanmean(re_random,2)) | isnan(nanmean(nre_random,2)) | s3r);
-
-% preMRI (more participants)
-[re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,2:4); % takes name of the dataset and sessions to analyse and returns the blocks aggregated
-[re2,nre2,re_random2,nre_random2] = extract_blocks('mri_myDat_s',sbj,2:4);  % MRI
-re=[re;re2]; nre=[nre;nre2]; re_random=[re_random;re_random2]; nre_random=[nre_random;nre_random2];
-
-re22 = re(:,1:24); nre22 = nre(:,1:24); re_random22 = re_random(:,1:2); nre_random22 = nre_random(:,1:2); 
-for i=1:size(re22,1), q1=prctile(re22(i,:),5); re22(i, re22(i,:)>q1)=nan; end
-for i=1:size(nre22,1), q1=prctile(nre22(i,:),5); nre22(i, nre22(i,:)>q1)=nan; end
-
-re33 = re(:,25:48); nre33 = nre(:,25:48); re_random33 = re_random(:,3:4); nre_random33 = nre_random(:,3:4);
-for i=1:size(re33,1), q1=prctile(re33(i,:),5); re33(i, re33(i,:)>q1)=nan; end
-for i=1:size(nre33,1), q1=prctile(nre33(i,:),5); nre33(i, nre33(i,:)>q1)=nan; end
-
-re44 = re(:,49:end); nre44 = nre(:,49:end); re_random44 = re_random(:,5:6); nre_random44 = nre_random(:,5:6);
-for i=1:size(re44,1), q1=prctile(re44(i,:),5); re44(i, re44(i,:)>q1)=nan; end
-for i=1:size(nre44,1), q1=prctile(nre44(i,:),5); nre44(i, nre44(i,:)>q1)=nan; end
-
-re22 = nanmedian(re22,2); re33 = nanmedian(re33,2); re44 = nanmedian(re44,2); nre22 = nanmedian(nre22,2); nre33 = nanmedian(nre33,2); nre44 = nanmedian(nre44,2);
-
-re1 = [re22  re33  re44]; nre1 = [nre22  nre33  nre44];
-re1(rppnt,:)=[]; nre1(rppnt,:)=[];
-
-% pre-sleep session1
-[re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,1); 
-[re2,nre2,re_random2,nre_random2] = extract_blocks('mri_myDat_s',sbj,1); 
-re=[re;re2]; nre=[nre;nre2]; re_random=[re_random;re_random2]; nre_random=[nre_random;nre_random2];
-for i=1:size(re,1), q1=prctile(re(i,:),5); re(i, re(i,:)>q1)=nan; end
-for i=1:size(nre,1), q1=prctile(nre(i,:),5); nre(i, nre(i,:)>q1)=nan; end 
-
-
-re = nanmedian(re,2); nre = nanmedian(nre,2);
-
-re(rppnt,:)=[]; nre(rppnt,:)=[];
-re1 = bsxfun(@minus,nanmedian(re,2), re1); % pre - post
-nre1 = bsxfun(@minus,nanmedian(nre,2), nre1);
-% figure 2a
-all_stats = lv_pretty_errorbar(nanmedian(re1 ,2),nanmedian(nre1 ,2),'reactivated','non-reactivated');
-hold_post = nanmedian(re1,2); 
-
-% Encoding relationship to improvement (inverted U-shape)
-pre = nanmedian(re,2); 
-winlen=14; preTime=[];
-r = 1:length(pre)-winlen; 
-range = [r' r'+winlen];
-R = nanmedian(re1,2); NR = nanmedian(nre1,2);
-[val, id] = sort(nanmedian(re,2)); Rdat=[]; NRdat=[];
-% axtime with improvement
-for i=1:size(range,1)
-    Rdat = [Rdat R( id(range(i,1):range(i,2)) )]; NRdat = [NRdat NR( id(range(i,1):range(i,2)) )];
-    preTime(i,1) = mean( val( range(i,1):range(i,2) ) );
+if strcmp(analysis,'behavioural_analyses')
+    pwd
+    [re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,3); % takes name of the dataset and sessions to analyse and returns the blocks aggregated
+    [re2,nre2,re_random2,nre_random2] = extract_blocks('mri_myDat_s',sbj,3);  % MRI
+    re=[re;re2]; nre=[nre;nre2]; re_random=[re_random;re_random2]; nre_random=[nre_random;nre_random2];
+    s3r = isnan(nanmean(re,2)) | isnan(nanmean(nre,2)) | isnan(nanmean(re_random,2)) | isnan(nanmean(nre_random,2));
+    
+    [re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,4); % takes name of the dataset and sessions to analyse and returns the blocks aggregated
+    [re2,nre2,re_random2,nre_random2] = extract_blocks('mri_myDat_s',sbj,4);  % MRI
+    re=[re;re2]; nre=[nre;nre2]; re_random=[re_random;re_random2]; nre_random=[nre_random;nre_random2];
+    rppnt = find(isnan(nanmean(re,2)) | isnan(nanmean(nre,2)) | isnan(nanmean(re_random,2)) | isnan(nanmean(nre_random,2)) | s3r);
+    
+    % preMRI (more participants)
+    [re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,2:4); % takes name of the dataset and sessions to analyse and returns the blocks aggregated
+    [re2,nre2,re_random2,nre_random2] = extract_blocks('mri_myDat_s',sbj,2:4);  % MRI
+    re=[re;re2]; nre=[nre;nre2]; re_random=[re_random;re_random2]; nre_random=[nre_random;nre_random2];
+    
+    re22 = re(:,1:24); nre22 = nre(:,1:24); re_random22 = re_random(:,1:2); nre_random22 = nre_random(:,1:2); 
+    for i=1:size(re22,1), q1=prctile(re22(i,:),5); re22(i, re22(i,:)>q1)=nan; end
+    for i=1:size(nre22,1), q1=prctile(nre22(i,:),5); nre22(i, nre22(i,:)>q1)=nan; end
+    
+    re33 = re(:,25:48); nre33 = nre(:,25:48); re_random33 = re_random(:,3:4); nre_random33 = nre_random(:,3:4);
+    for i=1:size(re33,1), q1=prctile(re33(i,:),5); re33(i, re33(i,:)>q1)=nan; end
+    for i=1:size(nre33,1), q1=prctile(nre33(i,:),5); nre33(i, nre33(i,:)>q1)=nan; end
+    
+    re44 = re(:,49:end); nre44 = nre(:,49:end); re_random44 = re_random(:,5:6); nre_random44 = nre_random(:,5:6);
+    for i=1:size(re44,1), q1=prctile(re44(i,:),5); re44(i, re44(i,:)>q1)=nan; end
+    for i=1:size(nre44,1), q1=prctile(nre44(i,:),5); nre44(i, nre44(i,:)>q1)=nan; end
+    
+    re22 = nanmedian(re22,2); re33 = nanmedian(re33,2); re44 = nanmedian(re44,2); nre22 = nanmedian(nre22,2); nre33 = nanmedian(nre33,2); nre44 = nanmedian(nre44,2);
+    
+    re1 = [re22  re33  re44]; nre1 = [nre22  nre33  nre44];
+    re1(rppnt,:)=[]; nre1(rppnt,:)=[];
+    
+    % pre-sleep session1
+    [re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,1); 
+    [re2,nre2,re_random2,nre_random2] = extract_blocks('mri_myDat_s',sbj,1); 
+    re=[re;re2]; nre=[nre;nre2]; re_random=[re_random;re_random2]; nre_random=[nre_random;nre_random2];
+    for i=1:size(re,1), q1=prctile(re(i,:),5); re(i, re(i,:)>q1)=nan; end
+    for i=1:size(nre,1), q1=prctile(nre(i,:),5); nre(i, nre(i,:)>q1)=nan; end 
+    
+    
+    re = nanmedian(re,2); nre = nanmedian(nre,2);
+    
+    re(rppnt,:)=[]; nre(rppnt,:)=[];
+    re1 = bsxfun(@minus,nanmedian(re,2), re1); % pre - post
+    nre1 = bsxfun(@minus,nanmedian(nre,2), nre1);
+    % figure 2a
+    all_stats = lv_pretty_errorbar(nanmedian(re1 ,2),nanmedian(nre1 ,2),' ',' ');
+    hold_post = nanmedian(re1,2); 
+    fig = gcf;
+    set(fig, 'NumberTitle', 'off', 'Name', 'Figure 2a');
+    
+    % Encoding relationship to improvement (inverted U-shapes)
+    pre = nanmedian(re,2); 
+    winlen=14; preTime=[];
+    r = 1:length(pre)-winlen; 
+    range = [r' r'+winlen];
+    R = nanmedian(re1,2); NR = nanmedian(nre1,2);
+    [val, id] = sort(nanmedian(re,2)); Rdat=[]; NRdat=[];
+    % axtime with improvement
+    for i=1:size(range,1)
+        Rdat = [Rdat R( id(range(i,1):range(i,2)) )]; NRdat = [NRdat NR( id(range(i,1):range(i,2)) )];
+        preTime(i,1) = mean( val( range(i,1):range(i,2) ) );
+    end
+    % figure 4a
+    figure, lv_pretty_errorbar(round(preTime'), Rdat-NRdat, (Rdat-NRdat).*0, 0); % difference
+    h=gca; h.XTickLabelRotation = 90;
+    xlabel('Encoding reaction time (ms)');
+    ylabel('Improvement (cued - uncued)');
+    fig = gcf;
+    set(fig, 'NumberTitle', 'off', 'Name', 'Figure 4a');
+    %% partial correlation between improvement after sleep and classification figure 2d
+    pwd
+    [re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,3); % takes name of the dataset and sessions to analyse and returns the blocks aggregated
+    [re2,nre2,re_random2,nre_random2] = extract_blocks('mri_myDat_s',sbj,3);  % MRI
+    re=[re;re2]; nre=[nre;nre2]; re_random=[re_random;re_random2]; nre_random=[nre_random;nre_random2];
+    s3r = isnan(nanmean(re,2)) | isnan(nanmean(nre,2)) | isnan(nanmean(re_random,2)) | isnan(nanmean(nre_random,2));
+    
+    [re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,4); % takes name of the dataset and sessions to analyse and returns the blocks aggregated
+    [re2,nre2,re_random2,nre_random2] = extract_blocks('mri_myDat_s',sbj,4);  % MRI
+    re=[re;re2]; nre=[nre;nre2]; re_random=[re_random;re_random2]; nre_random=[nre_random;nre_random2];
+    rppnt = find(isnan(nanmean(re,2)) | isnan(nanmean(nre,2)) | isnan(nanmean(re_random,2)) | isnan(nanmean(nre_random,2)) | s3r);
+    
+    % preMRI (more participants)
+    [re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,2:4); % takes name of the dataset and sessions to analyse and returns the blocks aggregated
+    [re2,nre2,re_random2,nre_random2] = extract_blocks('mri_myDat_s',sbj,2:4);  % MRI
+    re=[re;re2]; nre=[nre;nre2]; re_random=[re_random;re_random2]; nre_random=[nre_random;nre_random2];
+    
+    re22 = re(:,1:24); nre22 = nre(:,1:24); re_random22 = re_random(:,1:2); nre_random22 = nre_random(:,1:2); 
+    for i=1:size(re22,1), q1=prctile(re22(i,:),5); re22(i, re22(i,:)>q1)=nan; end
+    for i=1:size(nre22,1), q1=prctile(nre22(i,:),5); nre22(i, nre22(i,:)>q1)=nan; end
+    
+    re33 = re(:,25:48); nre33 = nre(:,25:48); re_random33 = re_random(:,3:4); nre_random33 = nre_random(:,3:4);
+    for i=1:size(re33,1), q1=prctile(re33(i,:),5); re33(i, re33(i,:)>q1)=nan; end
+    for i=1:size(nre33,1), q1=prctile(nre33(i,:),5); nre33(i, nre33(i,:)>q1)=nan; end
+    
+    re44 = re(:,49:end); nre44 = nre(:,49:end); re_random44 = re_random(:,5:6); nre_random44 = nre_random(:,5:6);
+    for i=1:size(re44,1), q1=prctile(re44(i,:),5); re44(i, re44(i,:)>q1)=nan; end
+    for i=1:size(nre44,1), q1=prctile(nre44(i,:),5); nre44(i, nre44(i,:)>q1)=nan; end
+    re22 = nanmedian(re22,2); re33 = nanmedian(re33,2); re44 = nanmedian(re44,2); nre22 = nanmedian(nre22,2); nre33 = nanmedian(nre33,2); nre44 = nanmedian(nre44,2);
+    re1 = [re22]; nre1 = [nre22];
+    
+    % pre-sleep session1
+    [re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,1); 
+    [re2,nre2,re_random2,nre_random2] = extract_blocks('mri_myDat_s',sbj,1); 
+    re=[re;re2]; nre=[nre;nre2]; re_random=[re_random;re_random2]; nre_random=[nre_random;nre_random2];
+    for i=1:size(re,1), q1=prctile(re(i,:),5); re(i, re(i,:)>q1)=nan; end
+    for i=1:size(nre,1), q1=prctile(nre(i,:),5); nre(i, nre(i,:)>q1)=nan; end 
+    
+    re = nanmedian(re,2); nre = nanmedian(nre,2);
+    
+    % figure 2d
+    % correlating with classification .. for session 2 because after sleep
+    load fidelity_pt fidelity_pt;
+    % the correlation without presleep correction
+    stats = lv_vec2corr(max(fidelity_pt,[],2), (nanmedian(nre1 ,2)-nanmedian(re1 ,2)),'Classification performance (CCR)','Improvement after sleep (ms)'); % correlating with classification
+    % partial correlation
+    [rho,pval] = partialcorr(max(fidelity_pt,[],2), nanmedian(nre1,2) - nanmedian(re1,2) ,nanmedian(nre,2) - nanmedian(re,2), 'type', 'Spearman')
+    fig = gcf;
+    set(fig, 'NumberTitle', 'off', 'Name', 'Figure 2d');
 end
-% figure 4a
-figure, lv_pretty_errorbar(round(preTime'), Rdat-NRdat, (Rdat-NRdat).*0, 0); % difference
-h=gca; h.XTickLabelRotation = 90;
-xlabel('Encoding reaction time (ms)');
-ylabel('Improvement (cued - uncued)');
-
-%% partial correlation between improvement after sleep and classification figure 2d
-pwd
-[re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,3); % takes name of the dataset and sessions to analyse and returns the blocks aggregated
-[re2,nre2,re_random2,nre_random2] = extract_blocks('mri_myDat_s',sbj,3);  % MRI
-re=[re;re2]; nre=[nre;nre2]; re_random=[re_random;re_random2]; nre_random=[nre_random;nre_random2];
-s3r = isnan(nanmean(re,2)) | isnan(nanmean(nre,2)) | isnan(nanmean(re_random,2)) | isnan(nanmean(nre_random,2));
-
-[re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,4); % takes name of the dataset and sessions to analyse and returns the blocks aggregated
-[re2,nre2,re_random2,nre_random2] = extract_blocks('mri_myDat_s',sbj,4);  % MRI
-re=[re;re2]; nre=[nre;nre2]; re_random=[re_random;re_random2]; nre_random=[nre_random;nre_random2];
-rppnt = find(isnan(nanmean(re,2)) | isnan(nanmean(nre,2)) | isnan(nanmean(re_random,2)) | isnan(nanmean(nre_random,2)) | s3r);
-
-% preMRI (more participants)
-[re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,2:4); % takes name of the dataset and sessions to analyse and returns the blocks aggregated
-[re2,nre2,re_random2,nre_random2] = extract_blocks('mri_myDat_s',sbj,2:4);  % MRI
-re=[re;re2]; nre=[nre;nre2]; re_random=[re_random;re_random2]; nre_random=[nre_random;nre_random2];
-
-re22 = re(:,1:24); nre22 = nre(:,1:24); re_random22 = re_random(:,1:2); nre_random22 = nre_random(:,1:2); 
-for i=1:size(re22,1), q1=prctile(re22(i,:),5); re22(i, re22(i,:)>q1)=nan; end
-for i=1:size(nre22,1), q1=prctile(nre22(i,:),5); nre22(i, nre22(i,:)>q1)=nan; end
-
-re33 = re(:,25:48); nre33 = nre(:,25:48); re_random33 = re_random(:,3:4); nre_random33 = nre_random(:,3:4);
-for i=1:size(re33,1), q1=prctile(re33(i,:),5); re33(i, re33(i,:)>q1)=nan; end
-for i=1:size(nre33,1), q1=prctile(nre33(i,:),5); nre33(i, nre33(i,:)>q1)=nan; end
-
-re44 = re(:,49:end); nre44 = nre(:,49:end); re_random44 = re_random(:,5:6); nre_random44 = nre_random(:,5:6);
-for i=1:size(re44,1), q1=prctile(re44(i,:),5); re44(i, re44(i,:)>q1)=nan; end
-for i=1:size(nre44,1), q1=prctile(nre44(i,:),5); nre44(i, nre44(i,:)>q1)=nan; end
-re22 = nanmedian(re22,2); re33 = nanmedian(re33,2); re44 = nanmedian(re44,2); nre22 = nanmedian(nre22,2); nre33 = nanmedian(nre33,2); nre44 = nanmedian(nre44,2);
-re1 = [re22]; nre1 = [nre22];
-
-% pre-sleep session1
-[re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,1); 
-[re2,nre2,re_random2,nre_random2] = extract_blocks('mri_myDat_s',sbj,1); 
-re=[re;re2]; nre=[nre;nre2]; re_random=[re_random;re_random2]; nre_random=[nre_random;nre_random2];
-for i=1:size(re,1), q1=prctile(re(i,:),5); re(i, re(i,:)>q1)=nan; end
-for i=1:size(nre,1), q1=prctile(nre(i,:),5); nre(i, nre(i,:)>q1)=nan; end 
-
-re = nanmedian(re,2); nre = nanmedian(nre,2);
-
-% figure 2d
-% correlating with classification .. for session 2 because after sleep
-load fidelity_pt fidelity_pt;
-% the correlation without presleep correction
-stats = lv_vec2corr(max(fidelity_pt,[],2), (nanmedian(nre1 ,2)-nanmedian(re1 ,2)),'Classification performance (CCR)','Improvement after sleep (ms)'); % correlating with classification
-% partial correlation
-[rho,pval] = partialcorr(max(fidelity_pt,[],2), nanmedian(nre1,2) - nanmedian(re1,2) ,nanmedian(nre,2) - nanmedian(re,2), 'type', 'Spearman')
-
 
 %% temporal compression
 % significant scaling factors
-load new_compression_scores new_compression_scores
-load new_compressionRatio new_compressionRatio
-lv_pretty_errorbar(1:size(new_compression_scores,1), new_compression_scores', (new_compression_scores'.*0)+0.25,0);
-new_compressionRatio = round(new_compressionRatio, 2);
-new_compressionRatio(new_compressionRatio<1) = 1./new_compressionRatio(new_compressionRatio<1); new_compressionRatio = round(new_compressionRatio, 1);
-xticklabels(new_compressionRatio);
-xtickangle(90)
-
+if strcmp(analysis,'temporal_compression')==1
+    load new_compression_scores new_compression_scores
+    load new_compressionRatio new_compressionRatio
+    lv_pretty_errorbar(1:size(new_compression_scores,1), new_compression_scores', (new_compression_scores'.*0)+0.25,0);
+    new_compressionRatio = round(new_compressionRatio, 2);
+    new_compressionRatio(new_compressionRatio<1) = 1./new_compressionRatio(new_compressionRatio<1); new_compressionRatio = round(new_compressionRatio, 1);
+    xticklabels(new_compressionRatio);
+    xtickangle(90)
+    fig = gcf;
+    set(fig, 'NumberTitle', 'off', 'Name', 'Figure 3');
+    textHandles = findall(fig, 'Type', 'text'); 
+    delete(textHandles);
+    xlabel('compression/dilation');
+    ylabel('CCR');
+end
 %% helping functions
 %% TF analysis
 function TFdat = do_tf(dat, baseline, frequencies) % takes 3d in .trial (trls_ch_time) and returns (ch_freq_time)

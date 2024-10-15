@@ -56,8 +56,12 @@ if length(t2)>1
         'LineWidth',2, 'color',[0.8500 0.3250 0.0980]),
     hold on, scatter(r2, t2,50, 'MarkerEdgeColor',[0.850980401039124 0.325490206480026 0.0980392172932625], 'LineWidth',0.75);
     
-    [xlb,ylb,connect_pts,chance] = lv_tune_params('xlabel','Cond1','ylabel','Cond2','connect conditions pts?','0','chance level','');
-    
+    % [xlb,ylb,connect_pts,chance] = lv_tune_params('xlabel','Cond1','ylabel','Cond2','connect conditions pts?','0','chance level','');
+    xlb = 'Cued';
+    ylb = 'Un-cued';
+    connect_pts = '0';
+    chance = '';
+
     h = gca;
     set(h, 'FontSize',18,'TickLabelInterpreter','none','XTick',[1 2],...
         'XTickLabel',{string(xlb),string(ylb)}, 'box','off');
