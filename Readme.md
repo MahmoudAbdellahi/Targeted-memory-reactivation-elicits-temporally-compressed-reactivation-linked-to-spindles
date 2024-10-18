@@ -60,7 +60,7 @@ Files starting with `lv` are used by the main pipeline. They're part of the Live
 - RAM: 16 GB
 - GPU: Nvidia GTX 980M
 - OS: Windows 8, Linux, OSX
-- MATLAB: 2018a
+- MATLAB: 2022b
 - ⏱️ Run Time: &lt; 20 hours
 
 ### Recommended Specs:
