@@ -298,12 +298,12 @@ if strcmp(analysis,'low_spindle_pw') || strcmp(analysis,'high_spindle_pw')
     % figure 4a
     res = lv_pretty_errorbar(result_trn.time, fidelity_pt_sp, (fidelity_pt_sp*0)+0.25, 1);
     fig = gcf;
-    set(fig, 'NumberTitle', 'off', 'Name', 'Figure 4b');
+    set(fig, 'NumberTitle', 'off', 'Name', 'Figure 4a');
     % figure 4b
     figure, 
     res = lv_pretty_errorbar(result_trn.time, fidelity_pt_sp, fidelity_pt_sp_low, 1);
     fig = gcf;
-    set(fig, 'NumberTitle', 'off', 'Name', 'Supp. figure 2');
+    set(fig, 'NumberTitle', 'off', 'Name', 'Figure 4b');
 end
 %% behavioural analyses
 %%  cued vs. un-cued which is the aggregation from different sessions
