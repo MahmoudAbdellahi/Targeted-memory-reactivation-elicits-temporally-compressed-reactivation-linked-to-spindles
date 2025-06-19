@@ -14,9 +14,9 @@
 % 2. data
 % 3. fieldtrip-20190419
 % (please change pathAppend accordingly)
-pathAppend = 'E:/D/work/jittered exp/Data and code for_Targeted memory reactivation elicits temporally compressed reactivation linked to spindles';
+pathAppend = 'D:/work/jittered exp/Data and code for_Targeted memory reactivation elicits temporally compressed reactivation linked to spindles';
 cd([pathAppend '/code']);
-analysis = 'temporal_compression'; % please change according to the analysis you would like to run: erp_tf, classification, high_spindle_pw, low_spindle_pw, temporal_compression, behavioural_analyses
+analysis = 'classification'; % please change according to the analysis you would like to run: erp_tf, classification, high_spindle_pw, low_spindle_pw, temporal_compression, behavioural_analyses
 
 %% configuring plots, and participants ids, importing fieldtrip default functions
 addpath([pathAppend '\fieldtrip-20190419'])
@@ -350,8 +350,17 @@ if strcmp(analysis,'behavioural_analyses')
     
     
     re = nanmedian(re,2); nre = nanmedian(nre,2);
-    
-    re(rppnt,:)=[]; nre(rppnt,:)=[];
+
+    % % correcting with random for pre session
+    % re = re - nanmedian(nanmin(re_random,[],2),2); % effect - random(higher rt) so lower/negative is better 
+    % nre = nre - nanmedian(nanmin(nre_random,[],2),2);
+    % % for post sessions 2 3 4
+    % nre_rand_post = [nanmedian(nanmin(nre_random22,[],2),2),nanmedian(nanmin(nre_random33,[],2),2),nanmedian(nanmin(nre_random44,[],2),2)]; nre_rand_post(rppnt,:)=[];
+    % re_rand_post = [nanmedian(nanmin(re_random22,[],2),2),nanmedian(nanmin(re_random33,[],2),2),nanmedian(nanmin(re_random44,[],2),2)]; re_rand_post(rppnt,:)=[];
+    % re1 = nanmedian(re1,2) - nanmedian(re_rand_post,2);
+    % nre1 = nanmedian(nre1,2) - nanmedian(nre_rand_post,2);
+
+    re(rppnt,:)=[]; nre(rppnt,:)=[]; re_random(rppnt,:)=[]; nre_random(rppnt,:)=[];
     re1 = bsxfun(@minus,nanmedian(re,2), re1); % pre - post
     nre1 = bsxfun(@minus,nanmedian(nre,2), nre1);
     % figure 2a
@@ -366,6 +375,7 @@ if strcmp(analysis,'behavioural_analyses')
     r = 1:length(pre)-winlen; 
     range = [r' r'+winlen];
     R = nanmedian(re1,2); NR = nanmedian(nre1,2);
+ 
     [val, id] = sort(nanmedian(re,2)); Rdat=[]; NRdat=[];
     % axtime with improvement
     for i=1:size(range,1)

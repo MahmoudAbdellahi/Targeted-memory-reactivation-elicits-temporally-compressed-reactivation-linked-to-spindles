@@ -34,12 +34,12 @@ Files starting with `lv` are used by the main pipeline. They're part of the Live
 
 1. **Choose Your Analysis**: Set the `analysis` variable to one of:
 
-   - `'erp_tf'` for erp and time frequence analyses (figure 2b)
-   - `'classification'` multi-class classification of reactivations (figure 2c)
-   - `'high_spindle_pw'` high spindle power classification (figure 4b)
-   - `'low_spindle_pw'` low spindle power classification (supplementary figure 2)
+   - `'erp_tf'` for erp and time frequency analyses (figure 2a)
+   - `'classification'` multi-class classification of reactivations (figure 2b)
+   - `'behavioural_analyses'` analyses of behavioural performance and correlation with classification (figure 2c, figure 2d)
    - `'temporal_compression'` fast memory reactivation in sleep (figure 3)
-   - `'behavioural_analyses'` analyses of behavioural performance and correlation with classification (figure 2a, figure 2d, figure 4a)
+   - `'high_spindle_pw'` high spindle power classification (figure 4a)
+   - `'low_spindle_pw'` low spindle power classification (figure 4b)
 
 2. **Find Figures**: Figure names produced from the code match those in the article.
 

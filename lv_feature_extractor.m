@@ -25,7 +25,7 @@ switch cfg.method
         cfg_preprocessing                 = [];
         cfg_preprocessing.bpfilter        = 'yes';
         %range = lv_tune_params('frequency band','4 8');
-        cfg_preprocessing.bpfreq          = [9 13]; %str2double(split(range)');
+        cfg_preprocessing.bpfreq          = [4 8]; %str2double(split(range)');
         data_bp= ft_preprocessing(cfg_preprocessing, data);
         % matlab's hilbert
         for h=1:size(data_bp.trial,1) %trls
