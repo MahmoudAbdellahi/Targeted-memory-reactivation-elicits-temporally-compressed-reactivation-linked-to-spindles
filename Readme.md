@@ -32,7 +32,7 @@ Files starting with `lv` are used by the main pipeline. They're part of the Live
 
 ## 🚀 How to Use This Code
 
-1. **Choose Your Analysis**: Set the `analysis` variable to one of:
+1. **Choose Your Analysis**: Set the `analysis` variable to one from the following options:
 
    - `'erp_tf'` for erp and time frequency analyses (figure 2a)
    - `'classification'` multi-class classification of reactivations (figure 2b)
