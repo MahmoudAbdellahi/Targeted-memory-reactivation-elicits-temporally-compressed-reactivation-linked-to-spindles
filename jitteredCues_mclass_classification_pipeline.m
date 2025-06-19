@@ -16,7 +16,7 @@
 % (please change pathAppend accordingly)
 pathAppend = 'D:/work/jittered exp/Data and code for_Targeted memory reactivation elicits temporally compressed reactivation linked to spindles';
 cd([pathAppend '/code']);
-analysis = 'classification'; % please change according to the analysis you would like to run: erp_tf, classification, high_spindle_pw, low_spindle_pw, temporal_compression, behavioural_analyses
+analysis = 'behavioural_analyses'; % please change according to the analysis you would like to run: erp_tf, classification, high_spindle_pw, low_spindle_pw, temporal_compression, behavioural_analyses
 
 %% configuring plots, and participants ids, importing fieldtrip default functions
 addpath([pathAppend '\fieldtrip-20190419'])
@@ -251,14 +251,14 @@ for run=1:size(sequence,1)
     end
     if strcmp(analysis,'classification')==1
         save fidelity_pt fidelity_pt
-        % figure 2 c
+        % figure 2 b
         load fidelity_pt fidelity_pt
         res = lv_pretty_errorbar(result_trn.time, fidelity_pt, (fidelity_pt*0)+0.25, 1);
         fig = gcf;
-        set(fig, 'NumberTitle', 'off', 'Name', 'Figure 2c');
+        set(fig, 'NumberTitle', 'off', 'Name', 'Figure 2b');
     end
 end
-%% ERP and TF analysis, figure 2b
+%% ERP and TF analysis, figure 2a
 if strcmp(analysis,'erp_tf')
     save erp erp
     save tf_pw tf_pw
@@ -295,11 +295,11 @@ end
 if strcmp(analysis,'low_spindle_pw') || strcmp(analysis,'high_spindle_pw')
     load fidelity_pt_sp_low fidelity_pt_sp_low;
     load fidelity_pt_sp fidelity_pt_sp; 
-    % figure 4b
+    % figure 4a
     res = lv_pretty_errorbar(result_trn.time, fidelity_pt_sp, (fidelity_pt_sp*0)+0.25, 1);
     fig = gcf;
     set(fig, 'NumberTitle', 'off', 'Name', 'Figure 4b');
-    % supp. figure 2
+    % figure 4b
     figure, 
     res = lv_pretty_errorbar(result_trn.time, fidelity_pt_sp, fidelity_pt_sp_low, 1);
     fig = gcf;
@@ -363,13 +363,13 @@ if strcmp(analysis,'behavioural_analyses')
     re(rppnt,:)=[]; nre(rppnt,:)=[]; re_random(rppnt,:)=[]; nre_random(rppnt,:)=[];
     re1 = bsxfun(@minus,nanmedian(re,2), re1); % pre - post
     nre1 = bsxfun(@minus,nanmedian(nre,2), nre1);
-    % figure 2a
+    % figure 2c
     all_stats = lv_pretty_errorbar(nanmedian(re1 ,2),nanmedian(nre1 ,2),' ',' ');
     hold_post = nanmedian(re1,2); 
     fig = gcf;
-    set(fig, 'NumberTitle', 'off', 'Name', 'Figure 2a');
+    set(fig, 'NumberTitle', 'off', 'Name', 'Figure 2c');
     
-    % Encoding relationship to improvement (inverted U-shapes)
+    
     pre = nanmedian(re,2); 
     winlen=14; preTime=[];
     r = 1:length(pre)-winlen; 
@@ -382,13 +382,12 @@ if strcmp(analysis,'behavioural_analyses')
         Rdat = [Rdat R( id(range(i,1):range(i,2)) )]; NRdat = [NRdat NR( id(range(i,1):range(i,2)) )];
         preTime(i,1) = mean( val( range(i,1):range(i,2) ) );
     end
-    % figure 4a
-    figure, lv_pretty_errorbar(round(preTime'), Rdat-NRdat, (Rdat-NRdat).*0, 0); % difference
-    h=gca; h.XTickLabelRotation = 90;
-    xlabel('Encoding reaction time (ms)');
-    ylabel('Improvement (cued - uncued)');
-    fig = gcf;
-    set(fig, 'NumberTitle', 'off', 'Name', 'Figure 4a');
+    % figure, lv_pretty_errorbar(round(preTime'), Rdat-NRdat, (Rdat-NRdat).*0, 0); % difference
+    % h=gca; h.XTickLabelRotation = 90;
+    % xlabel('Encoding reaction time (ms)');
+    % ylabel('Improvement (cued - uncued)');
+    % fig = gcf;
+    % set(fig, 'NumberTitle', 'off', 'Name', 'Figure 4a');
     %% partial correlation between improvement after sleep and classification figure 2d
     pwd
     [re,nre,re_random,nre_random] = extract_blocks('myDat_s',sbj,3); % takes name of the dataset and sessions to analyse and returns the blocks aggregated
